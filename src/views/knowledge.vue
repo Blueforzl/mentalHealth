@@ -2,7 +2,7 @@
   <div class="knowledge">
     <PageHead title="知识文章">
       <template #buttons>
-        <el-button type="primary" @click="dialogVisble = true">新增</el-button>
+        <el-button type="primary" @click="handleEdit({})">新增</el-button>
         <el-button type="primary">编辑</el-button>
       </template>
     </PageHead>
@@ -30,10 +30,10 @@
       </el-table-column>
       <el-table-column prop="authorName" label="作者" width="150" />
       <el-table-column prop="readCount" label="阅读量" width="150" />
-      <el-table-column prop="publishedAt" label="发布时间" width="150" />
+      <el-table-column prop="updatedAt" label="发布时间" width="150" />
       <el-table-column label="操作" fixed="right" width="240">
         <template #default="scope">
-          <el-button text type="primary">编辑</el-button>
+          <el-button text type="primary" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button text v-if="scope.row.status === 0 || scope.row.status === 2" type="success">发布 </el-button>
           <el-button text type="warning" v-if="scope.row.status === 1">下线</el-button>
           <el-button text type="danger">删除</el-button>
@@ -45,9 +45,14 @@
       layout="prev, pager, next"
       :page-size="pagenation.size"
       :total="pagenation.total"
-      @change="handleChange(page)"
+      @change="handleChange"
     />
-    <ArticleDialog v-model:modelValue="dialogVisble" :categories="categories"></ArticleDialog>
+    <ArticleDialog
+      v-model:modelValue="dialogVisble"
+      :categories="categories"
+      :article="currentArticle"
+      @success="handleSuccess"
+    ></ArticleDialog>
   </div>
 </template>
 <style lang="scss" scoped></style>
@@ -57,7 +62,7 @@
   import ArticleDialog from '@/components/ArticleDialog.vue';
   import { onMounted, ref, reactive } from 'vue';
   import { categoryTree } from '@/api/admin';
-  import { articlePage } from '@/api/admin';
+  import { articlePage, articleDetail } from '@/api/admin';
   import { Timer } from '@element-plus/icons-vue';
 
   //分类映射
@@ -77,10 +82,33 @@
       };
     });
     fromItem[1].options = categories.value;
+    // 初始化文章列表数据
+    handleSearch();
   });
+  // 编辑文章
+  const currentArticle = ref(null);
+  const handleEdit = (row) => {
+    // console.log('当前行数据', row);
+    if (!row.id) {
+      //新增文章
+      currentArticle.value = null;
+      dialogVisble.value = true;
+    } else {
+      //编辑文章
+      articleDetail(row.id).then((res) => {
+        console.log(res, '编辑数据');
+        currentArticle.value = res;
+        dialogVisble.value = true;
+      });
+    }
+  };
 
   const handleChange = (page) => {
     pagenation.currentPage = page;
+    handleSearch();
+  };
+  // 新增成功后刷新列表
+  const handleSuccess = () => {
     handleSearch();
   };
   const fromItem = [
@@ -122,9 +150,13 @@
       ...pagenation,
       ...data,
     };
-    const { records, total } = await articlePage(params);
-    tableData.value = records;
-    pagenation.total = total;
-    // console.log("res", res);
+    try {
+      const { records, total } = await articlePage(params);
+      tableData.value = records;
+      pagenation.total = total;
+    } catch (error) {
+      console.error('获取文章列表失败:', error);
+      ElMessage.error('获取文章列表失败');
+    }
   };
 </script>

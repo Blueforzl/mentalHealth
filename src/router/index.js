@@ -41,11 +41,13 @@ const backendRoutes = [
     ],
   },
   {
-    path: '/auth',
+    path: '/',
+
     component: () => import('@/views/auth.vue'),
     children: [
       {
-        path: 'login',
+        path: '',
+        name: 'login',
         component: () => import('@/views/login.vue'),
         meta: {
           title: '登录',

@@ -11,6 +11,12 @@ export const categoryTree = (data) => {
 export const articlePage = (params) => {
   return service.get('/knowledge/article/page', { params });
 };
+export const articleCreate = (data) => {
+  return service.post('/knowledge/article', data);
+};
+export const articleDetail=(id)=>{
+  return service.get(`/knowledge/article/${id}`);
+}
 export const uploadFile = (file, businessInfo) => {
   const formData = new FormData();
   formData.append('file', file);
