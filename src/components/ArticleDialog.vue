@@ -82,7 +82,7 @@
   import { uploadFile, articleCreate } from '@/api/admin';
   import { fileBaseUrl } from '@/config/index';
   import RichTextEditor from '@/components/RichTextEditor.vue';
-
+  import { updateArticle } from '@/api/admin';
   const props = defineProps({
     modelValue: {
       type: Boolean,
@@ -169,7 +169,6 @@
     emit('update:modelValue', false);
     businessId.value = null;
     removeImg();
-    
   };
 
   // 上传前校验
@@ -242,10 +241,22 @@
         // 调用创建文章接口
         const res = await articleCreate(submitData);
 
+        if (!isEdit.value) {
+          // 更新文章
+          loading.value = false;
+          emit('success'); // 触发成功事件
+          submitData.id = businessId.value;
+          await updateArticle(submitData);
+        } else {
+          // 创建文章
+          await articleCreate(submitData);
+          loading.value = false;
+          emit('success'); // 触发成功事件
+          currentArticle.value = res;
+        }
         // 处理响应
         ElMessage.success('文章创建成功');
-        loading.value = false;
-        emit('success'); // 触发成功事件
+
         handleClose();
       }
     } catch (error) {

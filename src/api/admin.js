@@ -14,9 +14,12 @@ export const articlePage = (params) => {
 export const articleCreate = (data) => {
   return service.post('/knowledge/article', data);
 };
-export const articleDetail=(id)=>{
+export const articleDetail = (id) => {
   return service.get(`/knowledge/article/${id}`);
-}
+};
+export const updateArticle = (data) => {
+  return service.put(`/knowledge/article/${id}`, data);
+};
 export const uploadFile = (file, businessInfo) => {
   const formData = new FormData();
   formData.append('file', file);
