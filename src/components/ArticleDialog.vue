@@ -223,42 +223,32 @@
   };
 
   // 提交表单
-  // 提交表单
   const handleSubmit = async () => {
     try {
       // 验证表单
-      const valid = await formRef.value.validate();
-      if (valid) {
-        loading.value = true;
+      await formRef.value.validate();
+      loading.value = true;
 
-        // 构建提交数据
-        const submitData = {
-          ...formData,
-          tags: formData.tagArray.join(','),
-        };
-        delete submitData.tagArray;
+      // 构建提交数据
+      const submitData = {
+        ...formData,
+        tags: formData.tagArray.join(','),
+      };
+      delete submitData.tagArray;
 
-        // 调用创建文章接口
-        const res = await articleCreate(submitData);
-
-        if (!isEdit.value) {
-          // 更新文章
-          loading.value = false;
-          emit('success'); // 触发成功事件
-          submitData.id = businessId.value;
-          await updateArticle(submitData);
-        } else {
-          // 创建文章
-          await articleCreate(submitData);
-          loading.value = false;
-          emit('success'); // 触发成功事件
-          currentArticle.value = res;
-        }
-        // 处理响应
+      if (isEdit.value) {
+        // 更新文章
+        await updateArticle(props.article.id, submitData);
+        ElMessage.success('文章更新成功');
+      } else {
+        // 创建文章
+        await articleCreate(submitData);
         ElMessage.success('文章创建成功');
-
-        handleClose();
       }
+      
+      loading.value = false;
+      emit('success'); // 触发成功事件
+      handleClose();
     } catch (error) {
       // 处理错误
       console.error('提交失败:', error);

@@ -96,7 +96,7 @@
   });
   // 编辑文章
   const currentArticle = ref(null);
-  const handleEdit = (row) => {
+  const handleEdit = async (row) => {
     // console.log('当前行数据', row);
     if (!row.id) {
       //新增文章
@@ -104,54 +104,73 @@
       dialogVisble.value = true;
     } else {
       //编辑文章
-      articleDetail(row.id).then((res) => {
+      try {
+        const res = await articleDetail(row.id);
         console.log(res, '编辑数据');
         currentArticle.value = res;
         dialogVisble.value = true;
-      });
+      } catch (error) {
+        console.error('获取文章详情失败:', error);
+        ElMessage.error('获取文章详情失败');
+      }
     }
   };
   // 发布文章
-  const handlePublish = (row) => {
+  const handlePublish = async (row) => {
     // console.log('发布文章', row);
-    ElMessageBox.confirm('确定发布文章吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'info',
-    }).then(() => {
-      articleStatus(row.id, { status: 1 }).then((res) => {
-        ElMessage.success('发布成功');
-        handleSearch();
+    try {
+      await ElMessageBox.confirm('确定发布文章吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info',
       });
-    });
+      await articleStatus(row.id, { status: 1 });
+      ElMessage.success('发布成功');
+      handleSearch();
+    } catch (error) {
+      if (error !== 'cancel') {
+        console.error('发布文章失败:', error);
+        ElMessage.error('发布文章失败');
+      }
+    }
   };
   // 下线文章
-  const handleUnPublish = (row) => {
+  const handleUnPublish = async (row) => {
     // console.log('下线文章', row);
-    ElMessageBox.confirm('确定下线文章吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'info',
-    }).then(() => {
-      articleStatus(row.id, { status: 2 }).then((res) => {
-        ElMessage.success('下线成功');
-        handleSearch();
+    try {
+      await ElMessageBox.confirm('确定下线文章吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info',
       });
-    });
+      await articleStatus(row.id, { status: 2 });
+      ElMessage.success('下线成功');
+      handleSearch();
+    } catch (error) {
+      if (error !== 'cancel') {
+        console.error('下线文章失败:', error);
+        ElMessage.error('下线文章失败');
+      }
+    }
   };
   //删除文章
-  const handleDelete = (row) => {
+  const handleDelete = async (row) => {
     // console.log('删除文章', row);
-    ElMessageBox.confirm('确定删除文章吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }).then(() => {
-      articleDelete(row.id).then((res) => {
-        ElMessage.success('删除成功');
-        handleSearch();
+    try {
+      await ElMessageBox.confirm('确定删除文章吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       });
-    });
+      await articleDelete(row.id);
+      ElMessage.success('删除成功');
+      handleSearch();
+    } catch (error) {
+      if (error !== 'cancel') {
+        console.error('删除文章失败:', error);
+        ElMessage.error('删除文章失败');
+      }
+    }
   };
 
   const handleChange = (page) => {

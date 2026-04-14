@@ -17,7 +17,7 @@ export const articleCreate = (data) => {
 export const articleDetail = (id) => {
   return service.get(`/knowledge/article/${id}`);
 };
-export const updateArticle = (data) => {
+export const updateArticle = (id, data) => {
   return service.put(`/knowledge/article/${id}`, data);
 };
 export const articleStatus = (id, data) => {
@@ -28,6 +28,9 @@ export const articleDelete = (id) => {
 };
 export const sessionPage = (params) => {
   return service.get('/psychological-chat/sessions', { params });
+};
+export const sessionDetail = (id) => {
+  return service.get(`/psychological-chat/sessions/${id}/messages`);
 };
 export const uploadFile = (file, businessInfo) => {
   const formData = new FormData();
