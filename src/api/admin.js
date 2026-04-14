@@ -20,6 +20,12 @@ export const articleDetail = (id) => {
 export const updateArticle = (data) => {
   return service.put(`/knowledge/article/${id}`, data);
 };
+export const articleStatus = (id, data) => {
+  return service.put(`/knowledge/article/${id}/status`, data);
+};
+export const articleDelete = (id) => {
+  return service.delete(`/knowledge/article/${id}`);
+};
 export const uploadFile = (file, businessInfo) => {
   const formData = new FormData();
   formData.append('file', file);
