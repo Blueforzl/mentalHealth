@@ -26,6 +26,9 @@ export const articleStatus = (id, data) => {
 export const articleDelete = (id) => {
   return service.delete(`/knowledge/article/${id}`);
 };
+export const sessionPage = (params) => {
+  return service.get('/psychological-chat/sessions', { params });
+};
 export const uploadFile = (file, businessInfo) => {
   const formData = new FormData();
   formData.append('file', file);
