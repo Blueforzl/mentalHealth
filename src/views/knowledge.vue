@@ -54,7 +54,7 @@
       :page-size="pagenation.size"
       :total="pagenation.total"
       @change="handleChange"
-    />
+    /> 
     <ArticleDialog
       v-model:modelValue="dialogVisble"
       :categories="categories"

@@ -41,6 +41,9 @@ export const deleteEmotion = (id) => {
 export const getOverviewData = () => {
   return service.get('/data-analytics/overview');
 };
+export const logout = () => {
+  return service.post('/user/logout');
+};
 export const uploadFile = (file, businessInfo) => {
   const formData = new FormData();
   formData.append('file', file);
