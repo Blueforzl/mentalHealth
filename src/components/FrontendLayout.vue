@@ -1,28 +1,44 @@
 <script setup>
   import { logout } from '@/api/admin';
   import { useRouter } from 'vue-router';
-  import { ElMessageBox } from 'element-plus';
-  import { useAdminStore } from '@/store/admin';
-  const adminStore = useAdminStore();
+  import { ElMessageBox, ElMessage } from 'element-plus';
+  import { ref, computed } from 'vue';
 
   const router = useRouter();
   const brandLogo = new URL('@/assets/imgs/机器人.png', import.meta.url).href;
-  const isLogin = adminStore.token !== null;
+
+  // 计算登录状态
+  const isLogin = computed(() => {
+    return localStorage.getItem('token') !== null;
+  });
 
   async function handleLogout() {
-    ElMessageBox.confirm('确定退出登录吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    })
-      .then(async () => {
-        await logout();
-        /* localStorage.removeItem('token')
-      localStorage.removeItem('userInfo') */
-        adminStore.removeAll();
-        router.push('/auth/login');
-      })
-      .catch(() => {});
+    try {
+      await ElMessageBox.confirm('确定退出登录吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      });
+
+      // 调用退出登录接口
+      await logout();
+
+      // 清除本地存储
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('user');
+
+      // 跳转到登录页
+      router.push('/auth/login');
+
+      ElMessage.success('退出登录成功');
+    } catch (error) {
+      // 取消操作时不做处理
+      if (error !== 'cancel') {
+        console.error('退出登录失败:', error);
+        ElMessage.error('退出登录失败');
+      }
+    }
   }
 </script>
 <template>
@@ -35,11 +51,12 @@
       <div class="nav-section">
         <router-link to="/" class="nav-link">首页</router-link>
         <template v-if="isLogin">
-          <router-link to="/consultation" class="nav-link">AI咨询</router-link>
+          <router-link to="/conslutation" class="nav-link">AI咨询</router-link>
           <router-link to="/emotion-diary" class="nav-link"> 情绪日记 </router-link>
+
+          <router-link to="/knowledge" class="nav-link">知识库</router-link>
+          <el-button v-if="isLogin" @click="handleLogout" class="logout-btn"> 退出登录 </el-button>
         </template>
-        <router-link to="/knoeledge" class="nav-link">知识库</router-link>
-        <el-button v-if="isLogin" @click="handleLogout" class="logout-btn"> 退出登录 </el-button>
         <template v-else>
           <router-link to="/auth/login" class="nav-link">登录</router-link>
           <router-link to="/auth/register" class="nav-link">注册</router-link>

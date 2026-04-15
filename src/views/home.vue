@@ -14,7 +14,7 @@
         </h2>
         <p class="description">我们的AI助手可以帮助你识别和管理情绪，提供个性化的咨询服务。</p>
         <div class="hero-actions">
-          <el-button @click="router.push('/consultation')" style="border-color: #fff" size="large">
+          <el-button @click="router.push('/conslutation')" style="border-color: #fff" size="large">
             开始倾诉，获得陪伴
           </el-button>
           <el-button color="transparent" style="border-color: #fff" size="large" @click="router.push('/emotion-diary')">

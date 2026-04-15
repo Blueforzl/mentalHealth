@@ -10,6 +10,7 @@ const backendRoutes = [
     children: [
       {
         path: 'dashboard',
+        name: 'dashboard',
         component: () => import('@/views/dashboard.vue'),
         meta: {
           title: '数据分析',
@@ -71,17 +72,17 @@ const frontendRoutes = [
     component: FrontendLayout,
     children: [
       {
-        path: '/',
+        path: '',
         component: () => import('@/views/home.vue'),
         meta: {
           title: '首页',
         },
       },
       {
-        path: 'conslutations',
+        path: 'conslutation',
         component: () => import('@/views/conslutation.vue'),
         meta: {
-          title: '咨询记录',
+          title: 'AI咨询',
         },
       },
       {
@@ -104,38 +105,46 @@ const router = createRouter({
 //路由前置守卫
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
-  //是否有token，有则放行，没有则跳转到登录页
-  if (token) {
-    //如果是后台
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    const userType = userInfo.userType;
-    if (userType == 2) {
-      if (to.path.startsWith('/back')) {
-        next();
-      } else {
-        next({ name: 'dashboard' });
-      }
-    } else if (userType == 1) {
-      if (to.path.startsWith('/back')) {
-        next({ name: 'login' });
-      } else {
-        next();
-      }
-    }
-  } else {
-    //判断访问的是前台还是后台
-    if (to.path.startsWith('/back')) {
-      next({ name: 'login' });
-    } else {
-      next();
-    }
-  }
+
+  // 登录和注册页面直接放行
   if (to.name === 'login' || to.name === 'register') {
     next();
-  } else if (token) {
-    next();
+    return;
+  }
+
+  // 有token的情况
+  if (token) {
+    try {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const userType = userInfo?.userType;
+
+      if (userType === 2) {
+        // 管理员可以访问后台和前台
+        next();
+      } else if (userType === 1) {
+        // 普通用户只能访问前台
+        if (to.path.startsWith('/back')) {
+          next({ name: 'login' });
+        } else {
+          next();
+        }
+      } else {
+        // 未知用户类型，跳转到登录页
+        next({ name: 'login' });
+      }
+    } catch (error) {
+      // 解析userInfo失败，跳转到登录页
+      next({ name: 'login' });
+    }
   } else {
-    next({ name: 'login' });
+    // 没有token的情况
+    if (to.path.startsWith('/back')) {
+      // 访问后台需要登录
+      next({ name: 'login' });
+    } else {
+      // 前台可以直接访问
+      next();
+    }
   }
 });
 

@@ -77,6 +77,7 @@
           if (data.userInfo.userType === 2) {
             router.push('/back/dashboard');
           } else {
+            router.push('/');
           }
         });
       } else {
