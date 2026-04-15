@@ -38,6 +38,9 @@ export const getEmotionPage = (params) => {
 export const deleteEmotion = (id) => {
   return service.delete(`/emotion-diary/admin/${id}`);
 };
+export const getOverviewData = () => {
+  return service.get('/data-analytics/overview');
+};
 export const uploadFile = (file, businessInfo) => {
   const formData = new FormData();
   formData.append('file', file);
