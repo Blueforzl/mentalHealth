@@ -32,6 +32,9 @@ export const sessionPage = (params) => {
 export const sessionDetail = (id) => {
   return service.get(`/psychological-chat/sessions/${id}/messages`);
 };
+export const getEmotionPage = (params) => {
+  return service.get('/emotion-diary/admin/page', { params });
+};
 export const uploadFile = (file, businessInfo) => {
   const formData = new FormData();
   formData.append('file', file);

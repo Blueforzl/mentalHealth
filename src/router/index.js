@@ -46,7 +46,7 @@ const backendRoutes = [
     component: () => import('@/views/auth.vue'),
     children: [
       {
-        path: '/login',
+        path: 'login',
         name: 'login',
         component: () => import('@/views/login.vue'),
         meta: {
