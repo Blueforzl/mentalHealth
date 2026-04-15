@@ -56,7 +56,7 @@ const backendRoutes = [
         },
       },
       {
-        path: '/register',
+        path: 'register',
         component: () => import('@/views/register.vue'),
         meta: {
           title: '注册',
